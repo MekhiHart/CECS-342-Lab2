@@ -39,21 +39,21 @@ void* my_alloc(int size) { // * Fills an allocation request
             found = true;
 
             // ? Verify if this is right
-            if (curr->block_size  > size + OVERHEAD_SIZE){  // * Splittable 
+            if (curr->block_size  > size + OVERHEAD_SIZE){  // * Splittable
 
 
                 // ! The block that is allocated  is the free head
                 //  ! the new_block is the block that has the block_size of (block_size - overhead)
 
                 // * ---- Allocates new block ----
-
-                struct Block* new_block = curr + 1; // * byte location is located next to the current block
-                new_block->block_size = size + OVERHEAD_SIZE;
-                new_block->next_block = curr->next_block;
+                struct Block* new_block = curr; // * byte location is located at the current block
 
                 // * Updating curr block block
-                curr-> block_size -= size + OVERHEAD_SIZE;
-                curr->next_block = new_block;
+                curr-> block_size = (new_block->block_size) - size + OVERHEAD_SIZE; // * Original block size minus size and overhead
+                curr->next_block = NULL;
+
+                new_block->block_size = size + OVERHEAD_SIZE;
+                new_block->next_block = new_block + 1;
 
                 return new_block; // * returns allocated block
             }
@@ -70,7 +70,7 @@ void* my_alloc(int size) { // * Fills an allocation request
         }
         else{ // * Current block doesn't fit
             // * -------- traversing heap --------
-            prev = curr; 
+            prev = curr;
             curr = curr -> next_block;
         }
 
